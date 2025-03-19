@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.mct.gws.core.Crud;
@@ -68,5 +71,12 @@ public class EmpresaService implements Crud<EmpresaDTOResponse, EmpresaDTOReques
 				.orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
 		
 		return modelMapper.map(empresa, EmpresaDTOResponse.class);
+	}
+	
+	public Page<EmpresaDTOResponse> listarPaginas (int pagina, int tamanho){		
+		Pageable pageable = PageRequest.of(pagina, tamanho);
+		Page<Empresa> empresasPage = empresaRepository.findAll(pageable);
+		
+		return empresasPage.map(empresa -> modelMapper.map(empresa, EmpresaDTOResponse.class));
 	}
 }

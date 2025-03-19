@@ -3,6 +3,7 @@ package br.com.mct.gws.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.mct.gws.dto.request.EmpresaDTORequest;
@@ -120,5 +122,27 @@ public class EmpresaController{
 					"Empresa não encontrada");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 		}
+	}
+	
+	@GetMapping("/listar-paginas")
+	public ResponseEntity<Object> listarPaginas(
+			@RequestParam int page,
+			@RequestParam int size){
+		
+		try {
+			Page<EmpresaDTOResponse> empresas = empresaService.listarPaginas(page, size);
+			
+			ApiResponse<Page<EmpresaDTOResponse>> response = new ApiResponse<>(
+					 "sucesso",
+		             "Empresas listadas com sucesso",
+		             empresas);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+			
+		} catch (RuntimeException e) {
+			ApiResponse<Object> response = new ApiResponse<>(
+					"erro",
+					"Erro ao listar empresas");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}		
 	}
 }
